@@ -1,0 +1,222 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         String   @default("CUSTOMER") // CUSTOMER | SELLER | ADMIN
+  avatar       String?
+  phone        String?
+  sellerStatus String   @default("NONE") // NONE | PENDING | APPROVED | REJECTED
+  sellerRequestedAt DateTime?
+  requestedShopName String?
+  createdAt    DateTime @default(now())
+
+  shop         Shop?
+  orders       Order[]
+  addresses    Address[]
+  notifications Notification[]
+  reviews      Review[]
+}
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String  @default("Home")
+  fullName  String
+  phone     String
+  street    String
+  area      String
+  city      String
+  postal    String?
+  isDefault Boolean @default(false)
+}
+
+model Shop {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  name          String
+  tagline       String?
+  description   String?
+  initials      String
+  location      String
+  rating        Float     @default(4.8)
+  totalSales    Int       @default(0)
+  verified      Boolean   @default(true)
+  coverImage    String?
+  ownerId       String?   @unique
+  owner         User?     @relation(fields: [ownerId], references: [id])
+  products      Product[]
+  createdAt     DateTime  @default(now())
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String?
+  icon        String    @default("category")
+  image       String?
+  accent      String    @default("primary") // primary | secondary | tertiary
+  products    Product[]
+}
+
+model Brand {
+  id       String    @id @default(cuid())
+  slug     String    @unique
+  name     String
+  products Product[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  subtitle    String?
+  description String?
+  price       Int
+  oldPrice    Int?
+  rating      Float    @default(4.8)
+  reviewCount Int      @default(0)
+  stock       Int      @default(20)
+  badge       String?
+  image       String
+  gallery     String?  // JSON array of image paths
+  specs       String?  // JSON object
+  featured    Boolean  @default(false)
+  trending    Boolean  @default(false)
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  shopId      String
+  shop        Shop     @relation(fields: [shopId], references: [id])
+  brandId     String?
+  brand       Brand?   @relation(fields: [brandId], references: [id])
+  reviews     Review[]
+  orderItems  OrderItem[]
+  priceAlerts PriceAlert[]
+  createdAt   DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  author    String
+  rating    Int
+  title     String?
+  body      String
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  orderNo       String      @unique
+  userId        String?
+  user          User?       @relation(fields: [userId], references: [id])
+  customerName  String
+  phone         String
+  email         String?
+  address       String
+  city          String
+  subtotal      Int
+  deliveryFee   Int         @default(0)
+  discount      Int         @default(0)
+  total         Int
+  paymentMethod String      @default("COD")
+  status        String      @default("PENDING") // PENDING | PROCESSING | SHIPPED | DELIVERED | CANCELLED
+  note          String?
+  items         OrderItem[]
+  createdAt     DateTime    @default(now())
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+  name      String
+  image     String
+  price     Int
+  quantity  Int
+}
+
+model Bundle {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  tagline     String?
+  description String?
+  kind        String   @default("gaming") // gaming | student | office | travel | gift
+  price       Int
+  oldPrice    Int
+  items       String   // JSON array of {name, subtitle, price, image}
+  accent      String   @default("primary")
+  featured    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Coupon {
+  id        String  @id @default(cuid())
+  code      String  @unique
+  type      String  @default("PERCENT") // PERCENT | FLAT
+  value     Int
+  minSpend  Int     @default(0)
+  active    Boolean @default(true)
+  uses      Int     @default(0)
+}
+
+model PriceAlert {
+  id          String   @id @default(cuid())
+  userId      String?
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  targetPrice Int
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  title     String
+  body      String
+  kind      String   @default("info")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model GroupBuy {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  description  String?
+  productImage String?
+  targetMembers Int
+  members      Int      @default(0)
+  price        Int
+  oldPrice     Int
+  endsAt       DateTime
+  status       String   @default("ACTIVE")
+  createdAt    DateTime @default(now())
+}
+
+model Complaint {
+  id        String   @id @default(cuid())
+  subject   String
+  message   String
+  status    String   @default("OPEN")
+  createdAt DateTime @default(now())
+}

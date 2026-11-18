@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img" aria-label="BAZAARFLOW product placeholder">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="75%">
+      <stop offset="0%" stop-color="#242b42"/>
+      <stop offset="55%" stop-color="#151a28"/>
+      <stop offset="100%" stop-color="#090b13"/>
+    </radialGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8b72ff"/>
+      <stop offset="100%" stop-color="#5ed6e8"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="900" height="900" fill="url(#bg)"/>
+
+  <g opacity="0.18" stroke="#ffffff">
+    <path d="M0 225h900M0 450h900M0 675h900M225 0v900M450 0v900M675 0v900"/>
+  </g>
+
+  <circle cx="450" cy="405" r="150" fill="none" stroke="url(#accent)" stroke-width="2" opacity="0.55"/>
+  <circle cx="450" cy="405" r="150" fill="url(#accent)" opacity="0.08" filter="url(#glow)"/>
+
+  <g transform="translate(450 405)" filter="url(#glow)">
+    <rect x="-46" y="-46" width="92" height="92" rx="26" fill="url(#accent)"/>
+    <path d="M-18 0l18-22 18 22-18 22z" fill="#0e0730" opacity="0.92"/>
+    <circle cx="30" cy="-30" r="7" fill="#ffffff"/>
+  </g>
+
+  <text x="450" y="640" text-anchor="middle" font-family="Manrope, Inter, Arial, sans-serif" font-size="46" font-weight="700" letter-spacing="6" fill="#f5f6fa">BAZAARFLOW</text>
+  <text x="450" y="690" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" letter-spacing="4" fill="#9ca3b8">PRODUCT IMAGE</text>
+</svg>
